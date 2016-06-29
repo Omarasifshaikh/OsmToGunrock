@@ -19,6 +19,6 @@ Open the project in CLion, or:
 
 
 ## TODO
-Better MTX output(header)
-Tests to see if one way logic is working as expected
-Optimizations, if needed to run large OSM's such as the planet.
+* Better MTX output(header)
+* Tests to see if one way logic is working as expected
+* Optimizations, if needed to run large OSM's such as the planet.
