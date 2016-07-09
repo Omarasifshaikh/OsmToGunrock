@@ -41,12 +41,12 @@ class MainHandler: public osmium::handler::Handler {
   uint64_t length = 0;
 
   void node(osmium::Node &n) {
-    ++nodes;  //Counter for the number of nodes starts from 1
     trackMap[n.id()] = nodes;
+    nodes++;  //Counter for the number of nodes starts from 0
   }
 
   void way(osmium::Way &w) {
-    ++ways;
+
 
     if (w.tags()["highway"]
         && !w.tags()["oneway"]) { // Highways are routable : http://wiki.openstreetmap.org/wiki/Highways
@@ -68,7 +68,7 @@ class MainHandler: public osmium::handler::Handler {
                           mainGraph);
         }
       }
-    } else if (w.tags()["highway"] && strcmp(w.tags()["oneway"] ,"yes")) {// One way
+    } else if (w.tags()["highway"] && strcmp(w.tags()["oneway"], "yes")) {// One way
       for (auto it = w.nodes().begin(); it < w.nodes().end(); it++) { // Iterate through all nodes in the way
         auto nextIt = it + 1;
         if (trackMap.find(it->ref()) != trackMap.end() && nextIt < w.nodes().end()
@@ -81,10 +81,11 @@ class MainHandler: public osmium::handler::Handler {
         }
       }
     }
+    ways++;
   }
 
   void relation(osmium::Relation &) {
-    ++relations;
+    relations++;
   }
 
 };
@@ -114,6 +115,8 @@ int main(int argc, char *argv[]) {
   std::ofstream outputMTXFile;
   outputMTXFile.open("IN.mtx", std::ios::out); //Pass in a fully qualified path if required
   if (outputMTXFile.is_open()) {
+    outputMTXFile << "%%MatrixMarket matrix coordinate real general\n";
+    outputMTXFile << num_vertices(mainGraph) << " " << num_vertices(mainGraph) << " " << num_edges(mainGraph) << "\n";
     for (edge = edges.first; edge != edges.second; ++edge) {
       outputMTXFile << (*edge).m_source << " ";
       outputMTXFile << (*edge).m_target << " ";
